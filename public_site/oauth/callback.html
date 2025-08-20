@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Authentication Complete</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+            margin: 2rem;
+            line-height: 1.5;
+        }
+
+        code {
+            background: #f4f4f5;
+            padding: 0.15rem 0.35rem;
+            border-radius: 4px;
+        }
+
+        .ok {
+            color: #0a7f42;
+            font-weight: 600;
+        }
+
+        .err {
+            color: #b00020;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 760px;
+        }
+
+        button {
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            border: 1px solid #d4d4d8;
+            background: #fff;
+            cursor: pointer;
+        }
+    </style>
+    <meta name="robots" content="noindex">
+    <meta name="color-scheme" content="light dark">
+    <link rel="icon" href="data:,">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline';">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Authentication Complete</h1>
+        <div id="status"></div>
+        <div id="details" style="margin-top: 1rem;"></div>
+        <div id="actions" style="margin-top: 1rem;"></div>
+    </div>
+
+    <script>
+        (function () {
+            function getParams() {
+                var params = {};
+                var query = location.search.substring(1);
+                query.split('&').forEach(function (kv) {
+                    if (!kv) return;
+                    var parts = kv.split('=');
+                    var k = decodeURIComponent(parts[0] || '');
+                    var v = decodeURIComponent(parts[1] || '');
+                    params[k] = v;
+                });
+                return params;
+            }
+
+            var params = getParams();
+            var statusEl = document.getElementById('status');
+            var detailsEl = document.getElementById('details');
+            var actionsEl = document.getElementById('actions');
+
+            if (params.error) {
+                statusEl.innerHTML = '<p class="err">Error: ' + (params.error_description || params.error) + '</p>';
+            } else if (params.code) {
+                statusEl.innerHTML = '<p class="ok">Authorization code received.</p>';
+                var codePre = document.createElement('pre');
+                codePre.textContent = params.code;
+                detailsEl.innerHTML = '<p>Use this authorization code in your app to exchange for tokens.</p>';
+                detailsEl.appendChild(codePre);
+                var btn = document.createElement('button');
+                btn.textContent = 'Copy code to clipboard';
+                btn.onclick = function () {
+                    try {
+                        navigator.clipboard.writeText(params.code);
+                        btn.textContent = 'Copied!';
+                    } catch (e) {
+                        btn.textContent = 'Copy not available';
+                    }
+                };
+                actionsEl.appendChild(btn);
+            } else {
+                statusEl.innerHTML = '<p>No authorization response parameters present.</p>';
+            }
+        })();
+    </script>
+</body>
+
+</html>

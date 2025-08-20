@@ -7,3 +7,9 @@ build/
 dist/
 TeslaPy.egg-info/
 geckodriver.log
+
+# Local Netlify folder
+.netlify
+keys/
+.venv
+cache.json
